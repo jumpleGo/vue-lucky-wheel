@@ -1,0 +1,588 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <link rel="stylesheet" type="text/css" href="css/perfect-scrollbar.css">
+  <link rel="stylesheet" type="text/css" href="css/tooltipster/tooltipster.bundle.min.css">
+  <link rel="stylesheet" href="landing/css/main.css" type="text/css">
+  <link rel="stylesheet" href="landing/css/landing.css" type="text/css">
+  <title>lucky wheel | true_betters</title>
+  <meta name="theme-color" content="#611513">
+
+</head>
+
+<body>
+  <style>
+    body {
+      overflow: hidden;
+    }
+
+    .opred {
+      position: absolute;
+      display: flex;
+      justify-content: row;
+      top: 10%;
+
+    }
+
+    .opred img {
+      width: 40px;
+      height: 40px;
+    }
+
+    @import url("https://fonts.googleapis.com/css?family=Roboto+Condensed:700i");
+
+    #app {
+      overflow: hidden;
+      font-family: "Segoe UI", "Avenir", Helvetica, Arial, sans-serif, 微軟正黑體;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      width: 100%;
+      height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background-image: url('landing/images/casino-background-280x177.jpg');
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    .wheel__wrapper {
+      overflow: hidden;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      width: 100%;
+      height: 100%;
+      min-width: 900px;
+    }
+
+    .wheel__wrapper .wheel__controller {
+
+      width: 100%;
+      z-index: 3;
+      position: absolute;
+      top: 87%;
+
+      background-repeat: no-repeat;
+      background-position: center bottom;
+      background-size: contain;
+      overflow: visible;
+      display: flex;
+      justify-content: center;
+      padding: 0px 0px;
+      background: transparent;
+      border: none;
+      outline: none;
+    }
+
+    .wheel__wrapper .wheel__controller .controller__label {
+      background-color: #a01a15;
+
+      padding: 10px 60px;
+      border-radius: 5px;
+      color: #ffffff;
+      font-size: 20px;
+      font-weight: normal;
+      text-align: center;
+      box-shadow: 0px 0px 20px -5px black;
+
+    }
+
+    .wheel__wrapper .result__wrapper {
+      position: absolute;
+      width: 90%;
+      top: 70%;
+      color: white;
+      font-size: 10px;
+      height: 150px;
+      font-weight: bold;
+      background-color: transparent;
+      letter-spacing: -1px;
+      display: flex;
+      text-align: center;
+      justify-content: center;
+      align-items: center;
+      transition: none;
+      opacity: 0;
+      overflow: hidden;
+    }
+
+    .wheel__wrapper .result__wrapper.is-show {
+      opacity: 1;
+      transition: opacity 0.3s;
+    }
+
+    .wheel__wrapper .result__wrapper .result__inner {
+      width: 100%;
+      max-width: 1100px;
+      padding-left: 30px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .wheel__wrapper .result__wrapper .result__inner .congratute {
+      flex: 0 0 182px;
+      font-size: 30px;
+      color: white;
+      text-align: left;
+      letter-spacing: -2px;
+      line-height: 0.9;
+    }
+
+    .wheel__wrapper .result__wrapper .result__inner .result__text {
+      flex: 0 0 182px;
+    }
+
+    .wheel__wrapper .result__wrapper .result__inner .result__text .prefix-award {
+      font-size: 30px;
+      color: white;
+      text-align: left;
+      letter-spacing: -2px;
+      line-height: 0.9;
+    }
+
+    .wheel__wrapper .result__wrapper .result__inner .result__text .award {
+      width: fit-content;
+      font-size: 30px;
+      line-height: 30px;
+      color: #a01a15;
+      position: relative;
+      letter-spacing: -3px;
+    }
+
+    .wheel__wrapper .result__wrapper .result__inner .result__text .award::after {
+      content: "";
+      position: absolute;
+      bottom: 0px;
+      left: 0;
+      width: 100%;
+      height: 4px;
+      background-color: #a01a15;
+    }
+
+    .wheel__wrapper .result__wrapper .result-bg-dec__wrapper {
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+    }
+
+    .wheel__wrapper .result__wrapper .result-bg-dec__wrapper .result-bg-dec {
+      font-size: 42px;
+      opacity: 0.7;
+      color: #a01a15;
+      position: absolute;
+    }
+
+    .wheel__wrapper .result__wrapper .result-bg-dec__wrapper .result-bg-dec:nth-child(1) {
+      left: -20px;
+      top: 60%;
+      transform: rotate(30deg);
+    }
+
+    .wheel__wrapper .result__wrapper .result-bg-dec__wrapper .result-bg-dec:nth-child(2) {
+      top: 3px;
+      left: 22%;
+      transform: rotate(-30deg);
+    }
+
+    .wheel__wrapper .result__wrapper .result-bg-dec__wrapper .result-bg-dec:nth-child(3) {
+      bottom: -16px;
+      left: 240px;
+    }
+
+    .wheel__wrapper .result__wrapper .result-bg-dec__wrapper .result-bg-dec:nth-child(4) {
+      top: -12px;
+      left: 6%;
+      transform: rotate(30deg);
+    }
+
+    .wheel__wrapper .result__wrapper .result-bg-dec__wrapper .result-bg-dec:nth-child(5) {
+      top: -5px;
+      right: 20%;
+    }
+
+    .wheel__wrapper .result__wrapper .result-bg-dec__wrapper .result-bg-dec:nth-child(6) {
+      bottom: -10px;
+      right: 16%;
+      transform: rotate(-30deg);
+    }
+
+    .wheel__wrapper .result__wrapper .result-bg-dec__wrapper .result-bg-dec:nth-child(7) {
+      right: -3px;
+      top: 20px;
+      transform: rotate(30deg);
+    }
+
+    .wheel__wrapper .result__wrapper .result-bg-dec__wrapper .result-bg-dec:nth-child(8) {
+      right: 5%;
+      top: 50%;
+    }
+
+    .wheel__wrapper .content__wrapper {
+      overflow: hidden;
+      width: calc(100% - 100px);
+      max-width: 540px;
+      border-radius: 50%;
+      position: absolute;
+      overflow: hidden;
+      z-index: 2;
+      transition: all 0;
+    }
+
+    .wheel__wrapper .content__wrapper.turning {
+      transition: all 7s cubic-bezier(0, 0.48, 0.13, 1);
+    }
+
+    .wheel__wrapper .content__wrapper .sector__wrapper {
+      position: absolute;
+      top: 2.5%;
+      left: 2.5%;
+      width: 95%;
+      height: 95%;
+      border-radius: 50%;
+      overflow: hidden;
+    }
+
+    .wheel__wrapper .content__wrapper .sector__wrapper .sector {
+      position: absolute;
+      width: 50%;
+      height: 50%;
+      left: 50%;
+      top: 50%;
+      margin-top: -50%;
+      margin-left: -50%;
+      transform-origin: 100% 100%;
+      font-size: 24px;
+      display: flex;
+      border: 1px solid black;
+    }
+
+    .wheel__wrapper .content__wrapper .sector__wrapper .sector:nth-child(odd) {
+      background-color: #ffffff;
+    }
+
+    .wheel__wrapper .content__wrapper .sector__wrapper .sector:nth-child(even) {
+      background-color: #000000;
+    }
+
+    .wheel__wrapper .content__wrapper .sector__wrapper .sector.is-highlight {
+      background-color: #c02c27;
+    }
+
+    .wheel__wrapper .content__wrapper .label__wrapper {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+    }
+
+    .wheel__wrapper .content__wrapper .label__wrapper .label {
+      position: absolute;
+      top: 0;
+      left: 50%;
+      height: 50%;
+      padding: 30px;
+      transform-origin: 50% 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .wheel__wrapper .content__wrapper .label__wrapper .label:nth-child(odd) {
+      color: #000000;
+    }
+
+    .wheel__wrapper .content__wrapper .label__wrapper .label:nth-child(even) {
+      color: #ffffff;
+    }
+
+    .wheel__wrapper .content__wrapper .label__wrapper .label.is-highlight {
+      color: white;
+    }
+
+    .wheel__wrapper .content__wrapper .label__wrapper .label .text,
+    .wheel__wrapper .content__wrapper .label__wrapper .label .icon {
+      font-size: 20px;
+      font-weight: bold;
+      letter-spacing: -1.9px;
+    }
+
+    .wheel__wrapper .content__wrapper .label__wrapper .label .icon {
+      font-size: 35px;
+    }
+
+    .wheel__wrapper .content__wrapper::after {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      background: url("~@/assets/lucky-wheel/wheel-outside.svg") no-repeat;
+      background-position: center center;
+      background-size: contain;
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+    }
+
+    .wheel__wrapper .content__wrapper::before {
+      content: "";
+      display: block;
+      padding-top: 100%;
+      border-radius: 50%;
+    }
+
+    @media only screen and (min-device-width : 320px) and (max-device-width : 480px) {
+      .wheel__wrapper {
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        align-items: center;
+        width: 100vw;
+        height: 100vh;
+        min-width: auto;
+      }
+
+      .wheel__wrapper .content__wrapper {
+        position: relative;
+        margin-bottom: 10%;
+      }
+
+      .opred {
+        position: relative;
+        margin-top: 30%;
+
+
+      }
+
+      .wheel__wrapper .wheel__controller {
+        top: auto;
+        position: relative;
+        margin-bottom: 10%;
+
+      }
+    }
+
+    @media only screen and (min-device-width : 412px) and (max-device-width : 732px) {
+      .opred {
+        position: relative;
+        margin-top: 15%;
+
+
+      }
+    }
+  </style>
+  <header class="header">
+    <div class="container">
+      <div class="header-container">
+        <div class="header-left">
+          <div class="header-burger js-menuBurger"></div>
+          <div class="logo">
+            <div class="logo-icon"><img src="log.png" alt="Международная лига прогнозистов" width="65" />
+            </div>
+            <div class="logo-title">Ставки на футбол и FIFA18</div>
+          </div>
+        </div>
+        </a>
+        <div class="header-right">
+          <div class="header-buttons">
+
+            <div class="header-button"><a class="button style_orange js-asideRegLink"><b class="button__text">Купить
+                  спины</b></a></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+  <div id="app">
+
+    <div class="wheel__wrapper">
+
+      <div class="opred">
+        <img src="landing/images/sort-down.png" alt="">
+      </div>
+
+      <div class="content__wrapper" ref="roulette" @transitionend="turningEnd">
+        <div class="sector__wrapper">
+          <div class="sector" :class="awardIdx === i && isShowResult? 'is-highlight' : ''" v-for="(p, i) in prizes"
+            :style="`transform: rotate(${0.25 - (1/length)/2 - i*(1/length)}turn) skew(${90 - 360/length}deg)`"></div>
+        </div>
+        <div class="label__wrapper">
+          <div class="label" v-for="(p, i) in prizes"
+            :style="`transform: translateX(-50%) rotate(${-i*(1/length)}turn)`"
+            :class="awardIdx === i && isShowResult ? 'is-highlight' : ''">
+
+            <h2 class="text">{{ p.text_in }}</h2>
+          </div>
+        </div>
+      </div>
+
+      <div class="result__wrapper" :class="isShowResult ? 'is-show': ''">
+
+        <h1 class="award">Вы выиграли {{ result }} </h1>
+
+
+
+      </div>
+      <button ref="button" class="wheel__controller" @click="turning">
+        <h6 class="controller__label">ВРАЩАТЬ ({{ chance}})</h6>
+      </button>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/vue@2.6.10/dist/vue.js"></script>
+  <script>
+    let vm = new Vue({
+      el: '#app',
+      computed: {
+        length() {
+          return this.prizes.length;
+        },
+        result() {
+
+          if (this.awardIdx === -1) {
+            return null;
+          } else {
+            return this.prizes[this.awardIdx].text;
+
+
+          }
+        },
+        turn() {
+          return this.r * 50 + 1;
+        },
+        awardIdx() {
+
+          return (
+            Math.round((this.turn - Math.floor(this.turn)) * this.length) %
+            this.length
+          );
+        }
+      },
+      data() {
+        return {
+          prizes: [{
+              text_in: "40",
+              text: "Скидка 40 руб на экспресс"
+
+            },
+            {
+
+              text_in: "💣",
+              text: "Ничего"
+            },
+            {
+              text_in: "80",
+              text: "Скидка 80 руб на экспресс"
+
+            },
+            {
+
+              text_in: "💣",
+              text: "Ничего"
+            },
+            {
+
+              text_in: "free",
+              text: "Бесплатный экспресс"
+            },
+            {
+
+              text_in: "💣",
+              text: "Ничего"
+            },
+            {
+
+              text_in: "200",
+              text: "Скидка 200Р на чат с FIFA18"
+            },
+            {
+
+              text_in: "💣",
+              text: "Ничего"
+            },
+            {
+
+              text_in: "⟳",
+              text: "Бесплтаный спин"
+            },
+            {
+
+              text_in: "💣",
+              text: "Ничего"
+            },
+            {
+
+              text_in: "50%",
+              text: "Скидка 50% на все"
+            },
+            {
+
+              text_in: "💣",
+              text: "Ничего"
+            },
+          ],
+          r: 1,
+          isShowResult: false,
+          chance: 4,
+          disabled: 'disabled'
+        };
+      },
+      methods: {
+        turning() {
+          this.chance--;
+          this.isShowResult = false;
+          this.r = Math.random();
+          this.$refs.roulette.style.transform = `rotate(${this.turn}turn)`;
+          this.$refs.roulette.classList.add("turning");
+          if (this.chance > 0) {
+
+          } else {
+            this.$refs.button.setAttribute("disabled", this.disabled);
+          }
+        },
+        turningEnd() {
+          this.$refs.roulette.classList.remove("turning");
+          this.isShowResult = true;
+          if (this.prizes[this.awardIdx].text == "Бесплтаный спин") {
+            this.chance++
+          }
+        },
+
+
+
+
+      },
+    })
+  </script>
+
+  <script>
+    var yandexMoney = require("yandex-money-sdk");
+    //sc = 7D41AC0F6B2D09971D72FD29A6DCFCE9B1AA8E80FCEEC808893352051064BD06
+    var api = new yandexMoney.Wallet(access_token);
+    url = yandexMoney.Wallet.buildObtainTokenUrl(clientId, redirectURI, scope);
+
+
+    function tokenComplete(err, data) {
+      if (err) {
+        alert("Ошибка, проверьте подклюение к интернету, либо попробуйте позже.")
+      }
+      var access_token = data.access_token;
+      // save it to DB, config, etc..
+    }
+    yandexMoney.Wallet.getAccessToken(clientId, code, redirectURI, clientSecret, tokenComplete);
+  </script>
+</body>
+
+</html>
