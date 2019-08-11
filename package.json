@@ -1,0 +1,23 @@
+{
+  "name": "vue-lucky-wheel",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jumpleGo/vue-lucky-wheel.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/jumpleGo/vue-lucky-wheel/issues"
+  },
+  "homepage": "https://github.com/jumpleGo/vue-lucky-wheel#readme",
+  "dependencies": {
+    "firebase": "^6.3.5",
+    "firebase-tools": "^7.2.2"
+  }
+}
