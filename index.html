@@ -5,8 +5,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
-  <link rel="stylesheet" type="text/css" href="css/perfect-scrollbar.css">
-  <link rel="stylesheet" type="text/css" href="css/tooltipster/tooltipster.bundle.min.css">
+
   <link rel="stylesheet" href="landing/css/main.css" type="text/css">
   <link rel="stylesheet" href="landing/css/landing.css" type="text/css">
   <title>lucky wheel | true_betters</title>
@@ -37,7 +36,7 @@
 
     #app {
       overflow: hidden;
-      font-family: "Segoe UI", "Avenir", Helvetica, Arial, sans-serif, 微軟正黑體;
+      font-family: "Segoe UI", "Avenir", Helvetica, Arial, sans-serif;
       -webkit-font-smoothing: antialiased;
       -moz-osx-font-smoothing: grayscale;
       width: 100%;
@@ -46,6 +45,7 @@
       align-items: center;
       justify-content: center;
       background-image: url('landing/images/casino-background-280x177.jpg');
+      background-position: center;
     }
 
     * {
@@ -70,7 +70,7 @@
       z-index: 3;
       position: absolute;
       top: 87%;
-
+      visibility: hidden;
       background-repeat: no-repeat;
       background-position: center bottom;
       background-size: contain;
@@ -328,7 +328,6 @@
       position: absolute;
       top: 0;
       left: 0;
-      background: url("~@/assets/lucky-wheel/wheel-outside.svg") no-repeat;
       background-position: center center;
       background-size: contain;
       width: 100%;
@@ -356,12 +355,14 @@
 
       .wheel__wrapper .content__wrapper {
         position: relative;
-        margin-bottom: 10%;
+        margin-bottom: 20%;
+
+        z-index: 999999;
       }
 
       .opred {
         position: relative;
-        margin-top: 30%;
+        margin-top: 10%;
 
 
       }
@@ -369,7 +370,7 @@
       .wheel__wrapper .wheel__controller {
         top: auto;
         position: relative;
-        margin-bottom: 10%;
+        margin-bottom: 20%;
 
       }
     }
@@ -384,26 +385,25 @@
     }
   </style>
   <header class="header">
-    <div class="container">
+    <div class="container" style="display: flex;
+    flex-direction:row; color:white;align-items: center;justify-content: space-around;">
       <div class="header-container">
         <div class="header-left">
-          <div class="header-burger js-menuBurger"></div>
-          <div class="logo">
-            <div class="logo-icon"><img src="log.png" alt="Международная лига прогнозистов" width="65" />
-            </div>
-            <div class="logo-title">Ставки на футбол и FIFA18</div>
-          </div>
-        </div>
-        </a>
-        <div class="header-right">
-          <div class="header-buttons">
 
-            <div class="header-button"><a class="button style_orange js-asideRegLink"><b class="button__text">Купить
-                  спины</b></a></div>
-          </div>
+          <span class="mail_head" style="color: white">
+
+          </span>
+          <span style="color: white;" class="exit">(Выход)</span>
+
         </div>
       </div>
+
+      <div class="header-right"
+        style="background: rgba(15, 15, 15, 0.897);padding:7px 5px;border-radius:50px;display: flex;align-items: center;justify-content: center;">
+        <span>10</span>₽
+      </div>
     </div>
+
   </header>
   <div id="app">
 
@@ -412,12 +412,20 @@
       <div class="opred">
         <img src="landing/images/sort-down.png" alt="">
       </div>
-
+      
+     
       <div class="content__wrapper" ref="roulette" @transitionend="turningEnd">
+
+        <img style="z-index: 99999999;top: 0%;left:  0%;width: 100%;
+        max-width: 540px;
+        border-radius: 50%;
+        position: absolute;
+        overflow: hidden;" src="landing/images/round.png" alt="">
         <div class="sector__wrapper">
           <div class="sector" :class="awardIdx === i && isShowResult? 'is-highlight' : ''" v-for="(p, i) in prizes"
             :style="`transform: rotate(${0.25 - (1/length)/2 - i*(1/length)}turn) skew(${90 - 360/length}deg)`"></div>
         </div>
+  
         <div class="label__wrapper">
           <div class="label" v-for="(p, i) in prizes"
             :style="`transform: translateX(-50%) rotate(${-i*(1/length)}turn)`"
@@ -426,7 +434,10 @@
             <h2 class="text">{{ p.text_in }}</h2>
           </div>
         </div>
+
       </div>
+  
+
 
       <div class="result__wrapper" :class="isShowResult ? 'is-show': ''">
 
@@ -440,6 +451,190 @@
       </button>
     </div>
   </div>
+
+
+
+
+  <section class="modal" style="visibility:hidden;">
+    <div
+      style=" padding: 20px;;  background-image: url('landing/images/bg.png'); display: flex;flex-direction: column;align-items: center; ">
+      <h2>Войдите в аккаунт чтобы выиграть приз.</h2>
+      <div class="form">
+        <div class="input">
+          <label for="email" class="log_label">Ваша почта</label> <input type="text" class="input__once email"
+            name="email">
+        </div>
+        <div class="input">
+          <label for="pass" class="log_label">Пароль</label><input type="password" class="input__once pass" name="pass">
+        </div>
+        <span class="log_button">Войти</span>
+
+      </div>
+      <span class="err" style="
+            width:80%;
+            "></span>
+      <div class="mini_footer">
+        <p>Нет аккаунта? </p><a class="registr" onclick=change()> Зарегистрируйтесь!</a>
+      </div>
+    </div>
+  </section>
+
+  <section class="registration" style="visibility:hidden;">
+    <div
+      style=" padding: 20px;;  background-image: url('landing/images/bg.png'); display: flex;flex-direction: column;align-items: center; ">
+      <h2>Регистрация в True_betters.game</h2>
+      <div class="form">
+        <div class="input">
+          <label for="email" class="log_label">Ваша почта</label> <input type="text" class="input__once email_reg"
+            name="email">
+        </div>
+        <div class="input">
+          <label for="pass" class="log_label">Пароль</label><input type="password" class="input__once pass_reg"
+            name="pass">
+        </div>
+        <span class="reg_button">СОХРАНИТЬ</span>
+
+      </div>
+      <span class="err" style="
+          width:80%;
+          "></span>
+      <div class="mini_footer">
+        <p>Есть аккаунт? </p><a class="registr" onclick=dbchange()> Вход!</a>
+      </div>
+
+    </div>
+  </section>
+  <script>
+    function change() {
+      document.querySelector(".modal").style.visibility = "hidden";
+      document.querySelector(".registration").style.visibility = "visible";
+    };
+
+    function dbchange() {
+      document.querySelector(".modal").style.visibility = "visible";
+      document.querySelector(".registration").style.visibility = "hidden";
+    }
+  </script>
+  <style>
+    .registration {
+
+      transition: 1s;
+      color: white;
+      display: flex;
+
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      position: absolute;
+      z-index: 9999;
+      left: 5%;
+      top: 10%;
+      background: rgb(66, 1, 1);
+      width: 90%;
+      box-shadow: 0px 0px 10px 0px black;
+    }
+
+    .modal {
+      transition: 1s;
+      color: white;
+      display: flex;
+
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      position: absolute;
+      z-index: 9999;
+      left: 5%;
+      top: 10%;
+      background: rgb(66, 1, 1);
+      width: 90%;
+      box-shadow: 0px 0px 10px 0px black;
+
+    }
+
+    .form {
+      margin-top: 40px;
+      display: flex;
+      flex-direction: column;
+      align-items: center
+    }
+
+    .input {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .input__once {
+      font-size: 17px;
+      padding: 10px;
+      box-shadow: 0px 0px 10px 0px black;
+      border-radius: 5px;
+      background: rgba(255, 255, 255, 0.445);
+      color: white;
+    }
+
+    .mini_footer {
+      display: flex;
+      flex-direction: row;
+    }
+
+    .log_label {
+      font-size: 18px;
+      padding: 8px 0px;
+    }
+
+    .log_button:active,
+    .reg_button:active {
+      transform: translateY(2px);
+      transition: 0.1s;
+    }
+
+    .log_button {
+      background-image: url('landing/images/button.png');
+      background-size: cover;
+      width: 60%;
+      padding: 14px 0px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+      border-radius: 10px;
+      color: #3d0b0b;
+      font-size: 20px;
+      text-transform: uppercase;
+      margin-top: 20px;
+      margin-bottom: 40px;
+      box-shadow: 0px 0px 10px 0px rgb(153, 126, 4);
+
+    }
+
+    .reg_button {
+      background-image: url('landing/images/button.png');
+      background-size: cover;
+      width: 60%;
+      padding: 15px 0px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+      border-radius: 10px;
+      color: #1b1b1b;
+      font-size: 18px;
+      text-transform: uppercase;
+      margin-top: 20px;
+      margin-bottom: 40px;
+
+
+    }
+
+    .registr {
+      color: rgb(233, 174, 13);
+      border-bottom: 1px solid rgb(255, 174, 0);
+    }
+  </style>
+
+
+
 
   <script src="https://cdn.jsdelivr.net/npm/vue@2.6.10/dist/vue.js"></script>
   <script>
@@ -567,7 +762,7 @@
     })
   </script>
 
-  <script>
+  <!-- <script>
     var yandexMoney = require("yandex-money-sdk");
     //sc = 7D41AC0F6B2D09971D72FD29A6DCFCE9B1AA8E80FCEEC808893352051064BD06
     var api = new yandexMoney.Wallet(access_token);
@@ -582,7 +777,11 @@
       // save it to DB, config, etc..
     }
     yandexMoney.Wallet.getAccessToken(clientId, code, redirectURI, clientSecret, tokenComplete);
-  </script>
+  </script> -->
+  <script src="https://www.gstatic.com/firebasejs/5.8.6/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/5.9.0/firebase-auth.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/5.8.6/firebase-firestore.js"></script>
+  <script src="dist/firebase.js"></script>
 </body>
 
 </html>
