@@ -1,13 +1,4 @@
-var firebaseConfig = {
-   apiKey: "AIzaSyCcyZ8H1cBq2a1NtH4AB9sboJQSjLtSoxA",
-   authDomain: "true-betters.firebaseapp.com",
-   databaseURL: "https://true-betters.firebaseio.com",
-   projectId: "true-betters",
-   storageBucket: "",
-   messagingSenderId: "563882817339",
-   appId: "1:563882817339:web:da53010c4bfb93d3"
-};
-firebase.initializeApp(firebaseConfig);
+import firebase from 'firebase/app'
 // Add the Firebase products that you want to use
 const auth = firebase.auth();
 let firestore = firebase.firestore();
@@ -15,11 +6,23 @@ const settings = {
    timestampsInSnapshots: true
 };
 firestore.settings(settings);
+
+
+var user = firebase.auth().currentUser;
+let wheel = document.querySelector('.content__wrapper');
+let opred = document.querySelector('.opred');
+let button = document.querySelector('.wheel__controller');
+let mail = document.querySelector('.email');
+let pass = document.querySelector('.pass');
+let modal = document.querySelector('.modal');
+let registration = document.querySelector('.registration');
+let mail_head = document.querySelector('.mail_head');
+
 auth.onAuthStateChanged(function (user) {
    if (user) {
       setupUI(user);
    } else {
-      console.log('user log out');
+
       setupUI();
 
    }
@@ -33,18 +36,6 @@ const setupUI = (user) => {
       button.style.visibility = "visible";
    }
 }
-
-var user = firebase.auth().currentUser;
-let wheel = document.querySelector('.content__wrapper');
-let opred = document.querySelector('.opred');
-let button = document.querySelector('.wheel__controller');
-let mail = document.querySelector('.email');
-let pass = document.querySelector('.pass');
-let modal = document.querySelector('.modal');
-let registration = document.querySelector('.registration');
-let mail_head = document.querySelector('.mail_head');
-
-
 
 
 
@@ -74,7 +65,9 @@ btnReg.addEventListener('click', function (e) {
    let password = reg_pass.value;
    auth.createUserWithEmailAndPassword(email, password).then(cred => {
       firestore.collection('users').doc(cred.user.uid).set({
-         email: reg_mail.value
+         email: reg_mail.value,
+         spins : 1
+
       });
       registration.style.visibility = "hidden";
       button.style.visibility = "visible";
