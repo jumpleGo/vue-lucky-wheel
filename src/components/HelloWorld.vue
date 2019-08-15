@@ -30,11 +30,11 @@
 
             <div class="content__wrapper" ref="roulette" @transitionend="turningEnd">
 
-                <img style="z-index;top: 0%;left:  0%;width: 100%;
+                <img ref="image_round" style="z-index:999;top: 0%;left:  0%;width: 100%;
         max-width: 540px;
         border-radius: 50%;
         position: absolute;
-        overflow: hidden;" src="./../assets/round.png" alt="">
+        overflow: hidden;" :src=getImgUrl(src)  alt="">
                 <div class="sector__wrapper">
                     <div class="sector" :class="awardIdx === i && isShowResult? 'is-highlight' : ''" v-for="(p, i) in prizes" :key="i" :style="`transform: rotate(${0.25 - (1/length)/2 - i*(1/length)}turn) skew(${90 - 360/length}deg)`"></div>
                 </div>
@@ -131,6 +131,9 @@ export default {
 
             }
         },
+        turn2(){
+return (this.r * 50 + 1)*(-1);
+        },
         turn() {
             return this.r * 50 + 1;
         },
@@ -146,6 +149,7 @@ export default {
    
     data() {
         return {
+            src: 'round.png',
             prizes: [{
                     text_in: "40",
                     text: "Скидка 40 руб на экспресс"
@@ -209,7 +213,7 @@ export default {
             ],
             r: 1,
             isShowResult: false,
-            chance: Number,
+            chance: 10,
             disabled: 'disabled',
             email_in: '',
             password_in: '',
@@ -256,7 +260,9 @@ export default {
    
     // },
     methods: {
-
+    getImgUrl(pic) {
+            return require('../assets/' + pic);
+        },
         change() {
             this.$refs.modal.style.visibility = "hidden";
             this.$refs.registration.style.visibility = "visible";
@@ -275,13 +281,17 @@ export default {
             this.isShowResult = false;
             this.r = Math.random();
             this.$refs.roulette.style.transform = `rotate(${this.turn}turn)`;
+            this.$refs.image_round.style.transform = `rotate(${this.turn2}turn)`;
             this.$refs.roulette.classList.add("turning");
+            this.$refs.image_round.classList.add("turning")
+          
             }
            
             
         },
         turningEnd() {
             this.$refs.roulette.classList.remove("turning");
+             this.$refs.image_round.classList.remove("turning")
             this.isShowResult = true;
             if (this.prizes[this.awardIdx].text == "Бесплтаный спин") {
                 this.chance++
@@ -563,10 +573,10 @@ body {
     z-index: 2;
     transition: all 0;
 }
-
-.wheel__wrapper .content__wrapper.turning {
+.turning {
     transition: all 7s cubic-bezier(0, 0.48, 0.13, 1);
 }
+
 
 .wheel__wrapper .content__wrapper .sector__wrapper {
     position: absolute;
