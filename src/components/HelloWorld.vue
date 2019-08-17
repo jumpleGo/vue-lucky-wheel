@@ -25,16 +25,19 @@
         <div class="wheel__wrapper">
 
             <div class="opred">
-                <img src="./../assets/sort-down.png" alt="">
+
             </div>
 
             <div class="content__wrapper" ref="roulette" @transitionend="turningEnd">
-
+                <img ref="image_center" :src=getImgUrl(src2) style="z-index:999;top: 40%;left:  40%;width: 20%;
+        border-radius: 50%;
+        position: absolute;
+        overflow: hidden;" alt="">
                 <img ref="image_round" style="z-index:999;top: 0%;left:  0%;width: 100%;
         max-width: 540px;
         border-radius: 50%;
         position: absolute;
-        overflow: hidden;" :src=getImgUrl(src)  alt="">
+        overflow: hidden;" :src=getImgUrl(src) alt="">
                 <div class="sector__wrapper">
                     <div class="sector" :class="awardIdx === i && isShowResult? 'is-highlight' : ''" v-for="(p, i) in prizes" :key="i" :style="`transform: rotate(${0.25 - (1/length)/2 - i*(1/length)}turn) skew(${90 - 360/length}deg)`"></div>
                 </div>
@@ -107,13 +110,12 @@
 </template>
 
 <script>
- import { db } from '../main'
+import {
+    db
+} from '../main'
 import {
     auth
 } from '../main'
-
-
-
 
 export default {
     name: 'HelloWorld',
@@ -131,8 +133,8 @@ export default {
 
             }
         },
-        turn2(){
-return (this.r * 50 + 1)*(-1);
+        turn2() {
+            return (this.r * 50 + 1) * (-1);
         },
         turn() {
             return this.r * 50 + 1;
@@ -145,11 +147,11 @@ return (this.r * 50 + 1)*(-1);
             );
         }
     },
-  
-   
+
     data() {
         return {
             src: 'round.png',
+            src2: 'center.png',
             prizes: [{
                     text_in: "40",
                     text: "Скидка 40 руб на экспресс"
@@ -222,20 +224,20 @@ return (this.r * 50 + 1)*(-1);
             password_reg: ''
 
         };
-    }, 
+    },
     mounted() {
-      auth.onAuthStateChanged((user) => {
-           
-        const setupUI = (user) => {
-            if (!user) {
-                this.$refs.modal.style.visibility = "visible";
-                this.$refs.button.style.visibility = "hidden"
-            } else {
-                 this.$refs.mail_head.textContent = user.email;
-                this.$refs.button.style.visibility = "visible";
+        auth.onAuthStateChanged((user) => {
+
+            const setupUI = (user) => {
+                if (!user) {
+                    this.$refs.modal.style.visibility = "visible";
+                    this.$refs.button.style.visibility = "hidden"
+                } else {
+                    this.$refs.mail_head.textContent = user.email;
+                    this.$refs.button.style.visibility = "visible";
+                }
             }
-        }
-        
+
             if (user) {
                 setupUI(user);
             } else {
@@ -246,22 +248,19 @@ return (this.r * 50 + 1)*(-1);
             //        this.chance = doc.data().spin
             //        console.log(doc.data().spin)
             //     })
-        },
-       )
-        
-        
-    },
-//  firestore(){
-//    return{
-// chance: db.collection('users').doc(user.uid).collection('spins')
-  
+        }, )
 
-// }
-   
+    },
+    //  firestore(){
+    //    return{
+    // chance: db.collection('users').doc(user.uid).collection('spins')
+
+    // }
+
     // },
     methods: {
-    getImgUrl(pic) {
-            return require('../assets/' + pic);
+        getImgUrl(pic) {
+            return require('./../assets/' + pic);
         },
         change() {
             this.$refs.modal.style.visibility = "hidden";
@@ -274,27 +273,28 @@ return (this.r * 50 + 1)*(-1);
 
         },
         turning() {
-          if (this.chance <= 0) {
+            if (this.chance <= 0) {
                 this.$refs.button.setAttribute("disabled", this.disabled);
-            }else{
- this.chance--;
-            this.isShowResult = false;
-            this.r = Math.random();
-            this.$refs.roulette.style.transform = `rotate(${this.turn}turn)`;
-            this.$refs.image_round.style.transform = `rotate(${this.turn2}turn)`;
-            this.$refs.roulette.classList.add("turning");
-            this.$refs.image_round.classList.add("turning")
-          
+            } else {
+                this.chance--;
+                this.isShowResult = false;
+                this.r = Math.random();
+                this.$refs.roulette.style.transform = `rotate(${this.turn}turn)`;
+                this.$refs.image_round.style.transform = `rotate(${this.turn2}turn)`;
+                this.$refs.image_center.style.transform = `rotate(${this.turn2}turn)`;
+                this.$refs.roulette.classList.add("turning");
+                this.$refs.image_round.classList.add("turning");
+                this.$refs.image_center.classList.add("turning")
+
             }
-           
-            
+
         },
         turningEnd() {
             this.$refs.roulette.classList.remove("turning");
-             this.$refs.image_round.classList.remove("turning")
+            this.$refs.image_round.classList.remove("turning")
             this.isShowResult = true;
             if (this.prizes[this.awardIdx].text == "Бесплтаный спин") {
-                this.chance++
+                this.chance+=1;
             }
         },
         onSignUp() {
@@ -302,9 +302,8 @@ return (this.r * 50 + 1)*(-1);
             let password = this.password_in;
             auth.signInWithEmailAndPassword(email, password).then(() => {
                 this.$refs.modal.style.visibility = "hidden",
-                this.$refs.registration.style.visibility = "hidden"
-                   
-             
+                    this.$refs.registration.style.visibility = "hidden"
+
             }).catch(error => {
                 document.querySelector(".err").innerHTML = error
             });
@@ -312,15 +311,14 @@ return (this.r * 50 + 1)*(-1);
         exit() {
             auth.signOut().then(() => {});
             location.reload();
-            
+
         },
         onReg() {
             let email = this.email_reg;
             let password = this.password_reg;
             auth.createUserWithEmailAndPassword(email, password).then((cred) => {
                 db.collection('users').doc(cred.user.uid).set({
-                   spins : 50
-                   
+                    spins: 50
 
                 });
                 this.$refs.registration.style.visibility = "hidden";
@@ -573,10 +571,10 @@ body {
     z-index: 2;
     transition: all 0;
 }
-.turning {
-    transition: all 7s cubic-bezier(0, 0.48, 0.13, 1);
-}
 
+.turning {
+    transition: all 10s cubic-bezier(0.44,0.02,0.09,1);
+}
 
 .wheel__wrapper .content__wrapper .sector__wrapper {
     position: absolute;
