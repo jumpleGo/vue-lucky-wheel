@@ -24,4 +24,5 @@ export var db = firebase.firestore();
 export var auth = firebase.auth();
 new Vue({
   render: h => h(App),
+  
 }).$mount('#app')

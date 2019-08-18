@@ -14,8 +14,9 @@
                 </div>
             </div>
 
-            <div class="header-right" style="background: rgba(15, 15, 15, 0.897);padding:7px 5px;border-radius:50px;display: flex;align-items: center;justify-content: center;">
+            <div ref="balance" class="header-right" style="background: rgba(15, 15, 15, 0.897);padding:7px 5px;border-radius:50px;display: flex;align-items: center;justify-content: center;">
                 <span>10</span>₽
+
             </div>
         </div>
 
@@ -145,7 +146,8 @@ export default {
                 Math.round((this.turn - Math.floor(this.turn)) * this.length) %
                 this.length
             );
-        }
+        },
+
     },
 
     data() {
@@ -215,13 +217,14 @@ export default {
             ],
             r: 1,
             isShowResult: false,
-            chance: 10,
+            chance: Number,
             disabled: 'disabled',
             email_in: '',
             password_in: '',
             user: auth.currentUser,
             email_reg: '',
-            password_reg: ''
+            password_reg: '',
+            data : {}
 
         };
     },
@@ -229,14 +232,21 @@ export default {
         auth.onAuthStateChanged((user) => {
 
             const setupUI = (user) => {
-                if (!user) {
+                if(!user) {
                     this.$refs.modal.style.visibility = "visible";
                     this.$refs.button.style.visibility = "hidden"
                 } else {
+                
+db.collection('users').doc(user.uid).get().then(doc => {
+                 let myData = doc.data()
+                  this.chance = myData.spin
+                   
+                })              
                     this.$refs.mail_head.textContent = user.email;
                     this.$refs.button.style.visibility = "visible";
-                }
-            }
+
+                }}
+            
 
             if (user) {
                 setupUI(user);
@@ -244,21 +254,23 @@ export default {
                 setupUI();
 
             }
-            //  db.collection('users').doc("f2bpk4jgG0mmArisHcH0").get().then(doc =>{
-            //        this.chance = doc.data().spin
-            //        console.log(doc.data().spin)
-            //     })
+
         }, )
 
     },
-    //  firestore(){
-    //    return{
-    // chance: db.collection('users').doc(user.uid).collection('spins')
 
-    // }
+    //       firestore(){
+    //         return{
+    //      chance: db.collection('users').doc().get().then(data=>{
+    //  data.spin
+    //      })
 
-    // },
+    //      }
+
+    //      },
+
     methods: {
+
         getImgUrl(pic) {
             return require('./../assets/' + pic);
         },
@@ -272,11 +284,14 @@ export default {
             this.$refs.modal.style.visibility = "visible";
 
         },
-        turning() {
+        turning(user) {
             if (this.chance <= 0) {
                 this.$refs.button.setAttribute("disabled", this.disabled);
             } else {
-                this.chance--;
+                db.collection('users').doc(user.uid).set({
+                 spin : 0
+                   
+                })
                 this.isShowResult = false;
                 this.r = Math.random();
                 this.$refs.roulette.style.transform = `rotate(${this.turn}turn)`;
@@ -289,20 +304,29 @@ export default {
             }
 
         },
-        turningEnd() {
+        turningEnd(user) {
             this.$refs.roulette.classList.remove("turning");
             this.$refs.image_round.classList.remove("turning")
             this.isShowResult = true;
-            if (this.prizes[this.awardIdx].text == "Бесплтаный спин") {
-                this.chance+=1;
+            if (this.prizes[this.awardIdx].text == "Бесплатный спин") {
+                this.chance += 1;
             }
+             db.collection('users').doc(user.uid).add().then(doc => {
+                 let myData = doc.data()
+                  myData.award = this.prizes[this.awardIdx].text 
+                   
+                })
+
         },
         onSignUp() {
             let email = this.email_in;
             let password = this.password_in;
-            auth.signInWithEmailAndPassword(email, password).then(() => {
+            auth.signInWithEmailAndPassword(email, password).then((user) => {
                 this.$refs.modal.style.visibility = "hidden",
                     this.$refs.registration.style.visibility = "hidden"
+                db.collection('users').doc(user.uid).get().then(data => {
+                    this.chance = data.spin
+                })
 
             }).catch(error => {
                 document.querySelector(".err").innerHTML = error
@@ -313,14 +337,14 @@ export default {
             location.reload();
 
         },
-        onReg() {
+        onReg(user) {
             let email = this.email_reg;
             let password = this.password_reg;
-            auth.createUserWithEmailAndPassword(email, password).then((cred) => {
-                db.collection('users').doc(cred.user.uid).set({
-                    spins: 50
-
+            auth.createUserWithEmailAndPassword(email, password).then(() => {
+                db.collection('users').doc(user.uid).set({
+                    spins: 1,
                 });
+
                 this.$refs.registration.style.visibility = "hidden";
                 this.$refs.button.style.visibility = "visible";
             }).catch(function (error) {
@@ -334,7 +358,8 @@ export default {
                 }
 
             });
-        }
+
+        },
 
     },
 }
@@ -573,7 +598,7 @@ body {
 }
 
 .turning {
-    transition: all 10s cubic-bezier(0.44,0.02,0.09,1);
+    transition: all 1s cubic-bezier(0.44, 0.02, 0.09, 1);
 }
 
 .wheel__wrapper .content__wrapper .sector__wrapper {

@@ -11,6 +11,7 @@
     "core-js": "^2.6.5",
     "firebase": "^6.3.5",
     "vue": "^2.6.10",
+    "vue-loader": "^15.7.1",
     "vuefire": "^2.1.2"
   },
   "devDependencies": {
