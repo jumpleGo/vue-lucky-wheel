@@ -10,7 +10,6 @@ Vue.use(firestorePlugin)
 Vue.config.productionTip = false
 
 
-
 firebase.initializeApp({
    apiKey: "AIzaSyCcyZ8H1cBq2a1NtH4AB9sboJQSjLtSoxA",
    authDomain: "true-betters.firebaseapp.com",
@@ -22,6 +21,8 @@ firebase.initializeApp({
 })
 export var db = firebase.firestore();
 export var auth = firebase.auth();
+
+
 new Vue({
   render: h => h(App),
   

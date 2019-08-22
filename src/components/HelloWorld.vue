@@ -15,14 +15,16 @@
             </div>
 
             <div ref="balance" class="header-right" style="background: rgba(15, 15, 15, 0.897);padding:7px 5px;border-radius:50px;display: flex;align-items: center;justify-content: center;">
-                <span>10</span>₽
+                <span>{{rubles}}</span>₽
 
             </div>
         </div>
 
     </header>
     <div id="app">
-
+<div class="awards">
+    <img src="@/assets/award.png" alt="">
+</div>
         <div class="wheel__wrapper">
 
             <div class="opred">
@@ -112,16 +114,13 @@
 
 <script>
 import {
-    db
+    db, auth
 } from '../main'
-import {
-    auth
-} from '../main'
+
 
 export default {
     name: 'HelloWorld',
     computed: {
-
         length() {
             return this.prizes.length;
         },
@@ -147,7 +146,10 @@ export default {
                 this.length
             );
         },
+         thisdoc(){
+             return db.collection('users').doc(this.user.uid);
 
+    }
     },
 
     data() {
@@ -216,32 +218,38 @@ export default {
                 },
             ],
             r: 1,
+            rubles: 100,
             isShowResult: false,
             chance: Number,
             disabled: 'disabled',
             email_in: '',
             password_in: '',
-            user: auth.currentUser,
             email_reg: '',
             password_reg: '',
-            data : {}
+            data : {},
+            user: auth.currentUser,
+            id:"",
+            i: 0
+          
 
         };
     },
     mounted() {
         auth.onAuthStateChanged((user) => {
-
+            
             const setupUI = (user) => {
                 if(!user) {
                     this.$refs.modal.style.visibility = "visible";
                     this.$refs.button.style.visibility = "hidden"
                 } else {
-                
-db.collection('users').doc(user.uid).get().then(doc => {
+                    this.id = user.uid
+                //START  РАБОТАЕТ. НЕ ТРОГАЮ
+               db.collection('users').doc(user.uid).get().then(doc => {
                  let myData = doc.data()
                   this.chance = myData.spin
                    
-                })              
+                })  
+                //END            
                     this.$refs.mail_head.textContent = user.email;
                     this.$refs.button.style.visibility = "visible";
 
@@ -259,15 +267,7 @@ db.collection('users').doc(user.uid).get().then(doc => {
 
     },
 
-    //       firestore(){
-    //         return{
-    //      chance: db.collection('users').doc().get().then(data=>{
-    //  data.spin
-    //      })
-
-    //      }
-
-    //      },
+     
 
     methods: {
 
@@ -284,14 +284,12 @@ db.collection('users').doc(user.uid).get().then(doc => {
             this.$refs.modal.style.visibility = "visible";
 
         },
-        turning(user) {
+        turning() {
+         
             if (this.chance <= 0) {
                 this.$refs.button.setAttribute("disabled", this.disabled);
             } else {
-                db.collection('users').doc(user.uid).set({
-                 spin : 0
-                   
-                })
+               this.chance--
                 this.isShowResult = false;
                 this.r = Math.random();
                 this.$refs.roulette.style.transform = `rotate(${this.turn}turn)`;
@@ -304,30 +302,33 @@ db.collection('users').doc(user.uid).get().then(doc => {
             }
 
         },
-        turningEnd(user) {
+        turningEnd() {
+            
             this.$refs.roulette.classList.remove("turning");
             this.$refs.image_round.classList.remove("turning")
             this.isShowResult = true;
-            if (this.prizes[this.awardIdx].text == "Бесплатный спин") {
-                this.chance += 1;
-            }
-             db.collection('users').doc(user.uid).add().then(doc => {
-                 let myData = doc.data()
-                  myData.award = this.prizes[this.awardIdx].text 
-                   
-                })
+            //добавляет, issue : добавление в массив
+            let data = this.prizes[this.awardIdx].text
+            
+            var jsonVariable = {};
+            jsonVariable[this.i + 'award'] = data
+            
+               //Работает
+             db.collection('users').doc(this.id).set({
+                   spin : this.chance,
+               })
+               
+             db.collection('users').doc(this.id).collection('awards').add(jsonVariable)
+                this.i++
+               
 
         },
         onSignUp() {
             let email = this.email_in;
             let password = this.password_in;
-            auth.signInWithEmailAndPassword(email, password).then((user) => {
+            auth.signInWithEmailAndPassword(email, password).then(() => {
                 this.$refs.modal.style.visibility = "hidden",
                     this.$refs.registration.style.visibility = "hidden"
-                db.collection('users').doc(user.uid).get().then(data => {
-                    this.chance = data.spin
-                })
-
             }).catch(error => {
                 document.querySelector(".err").innerHTML = error
             });
@@ -337,13 +338,12 @@ db.collection('users').doc(user.uid).get().then(doc => {
             location.reload();
 
         },
-        onReg(user) {
+        onReg() {
             let email = this.email_reg;
             let password = this.password_reg;
             auth.createUserWithEmailAndPassword(email, password).then(() => {
-                db.collection('users').doc(user.uid).set({
-                    spins: 1,
-                });
+              let data = {spin: 1}
+               db.collection('users').doc(this.user.uid).set(data)
 
                 this.$refs.registration.style.visibility = "hidden";
                 this.$refs.button.style.visibility = "visible";
@@ -388,7 +388,15 @@ body {
     width: 40px;
     height: 40px;
 }
-
+.awards img{
+    position: absolute;
+    top: 10%;
+    left: 10%;
+        width:50px;
+        height:50px;
+         box-shadow: 0px 0px 20px -5px black;
+    
+}
 @import url("https://fonts.googleapis.com/css?family=Roboto+Condensed:700i");
 
 #app {
@@ -441,13 +449,13 @@ body {
 }
 
 .wheel__wrapper .wheel__controller .controller__label {
-    background-color: #a01a15;
-
-    padding: 10px 60px;
-    border-radius: 5px;
+    background-image: url('./../assets/button-spin.png');
+background-size: cover;
+    padding: 20px 60px;
+    border-radius: 15px;
     color: #ffffff;
     font-size: 20px;
-    font-weight: normal;
+    font-weight: bold;
     text-align: center;
     box-shadow: 0px 0px 20px -5px black;
 
