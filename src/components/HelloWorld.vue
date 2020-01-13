@@ -22,17 +22,17 @@
 
     </header>
     <div id="app">
-<div class="awards">
-    <img src="@/assets/award.png" alt="">
-</div>
+        <!-- <div class="awards">
+            <img src="@/assets/award.png" alt="">
+        </div> -->
         <div class="wheel__wrapper">
 
             <div class="opred">
 
             </div>
 
-            <div class="content__wrapper" ref="roulette" @transitionend="turningEnd">
-                <img ref="image_center" :src=getImgUrl(src2) style="z-index:999;top: 40%;left:  40%;width: 20%;
+            <div class="content__wrapper" ref="roulette" >
+                <img @transitionend="turningEnd" ref="image_center" :src=getImgUrl(src2) style="z-index:999;top: 40%;left:  40%;width: 20%;
         border-radius: 50%;
         position: absolute;
         overflow: hidden;" alt="">
@@ -41,8 +41,8 @@
         border-radius: 50%;
         position: absolute;
         overflow: hidden;" :src=getImgUrl(src) alt="">
-                <div class="sector__wrapper">
-                    <div class="sector" :class="awardIdx === i && isShowResult? 'is-highlight' : ''" v-for="(p, i) in prizes" :key="i" :style="`transform: rotate(${0.25 - (1/length)/2 - i*(1/length)}turn) skew(${90 - 360/length}deg)`"></div>
+                <div   class="sector__wrapper">
+                    <div  class="sector" :class="awardIdx === i && isShowResult? 'is-highlight' : ''" v-for="(p, i) in prizes" :key="i" :style="`transform: rotate(${0.25 - (1/length)/2 - i*(1/length)}turn) skew(${90 - 360/length}deg)`"></div>
                 </div>
 
                 <div class="label__wrapper">
@@ -59,13 +59,13 @@
                 <h1 class="award">Вы выиграли {{ result }} </h1>
 
             </div>
-            <button ref="button" class="wheel__controller" @click="turning">
-                <h6 class="controller__label">ВРАЩАТЬ ({{ chance }})</h6>
+            <button ref="button"  v-if="onRegBol" class="wheel__controller" @click="turning">
+                <h6 v-if="this.chance" class="controller__label">ВРАЩАТЬ ({{ chance }})</h6>
             </button>
         </div>
     </div>
 
-    <section ref="modal" class="modal">
+    <section ref="modal" v-show="show"  v-if="!onRegBol" class="modal">
         <div class="center" style=" padding: 20px;  display: flex;flex-direction: column;align-items: center; ">
             <h2>Войдите в аккаунт чтобы выиграть приз.</h2>
             <div class="form">
@@ -82,12 +82,12 @@
             width:80%;
             "></span>
             <div class="mini_footer">
-                <p>Нет аккаунта? </p><a class="registr" @click="change"> Зарегистрируйтесь!</a>
+                <p>Нет аккаунта? </p><a class="registr" @click="show = false"> Зарегистрируйтесь!</a>
             </div>
         </div>
     </section>
 
-    <section ref="registration" class="registration">
+    <section ref="registration" v-show="!show" class="registration">
         <div class="center" style=" padding: 20px;;   display: flex;flex-direction: column;align-items: center; ">
             <h2>Регистрация в True_betters.game</h2>
             <div class="form">
@@ -97,14 +97,14 @@
                 <div class="input">
                     <label for="pass" class="log_label">Пароль</label><input type="password" v-model="password_reg" class="input__once pass_reg" name="pass">
                 </div>
-                <span class="reg_button" @click="onReg">СОХРАНИТЬ</span>
+                <span class="reg_button" @click="onReg" >СОХРАНИТЬ</span>
 
             </div>
             <span class="err2" style="
           width:80%;
           "></span>
             <div class="mini_footer">
-                <p>Есть аккаунт? </p><a class="registr" @click="dbchange"> Вход!</a>
+                <p>Есть аккаунт? </p><a class="registr" @click="show = true"> Вход!</a>
             </div>
 
         </div>
@@ -114,24 +114,15 @@
 
 <script>
 import {
-    db, auth
+    db,
+    auth
 } from '../main'
-
 
 export default {
     name: 'HelloWorld',
     computed: {
         length() {
             return this.prizes.length;
-        },
-        result() {
-
-            if (this.awardIdx === -1) {
-                return null;
-            } else {
-                return this.prizes[this.awardIdx].text;
-
-            }
         },
         turn2() {
             return (this.r * 50 + 1) * (-1);
@@ -140,16 +131,18 @@ export default {
             return this.r * 50 + 1;
         },
         awardIdx() {
-
-            return (
-                Math.round((this.turn - Math.floor(this.turn)) * this.length) %
-                this.length
-            );
+            return  Math.round((this.turn - Math.floor(this.turn)) * this.length) % this.length 
         },
-         thisdoc(){
-             return db.collection('users').doc(this.user.uid);
-
-    }
+        result() {
+            if (this.awardIdx === -1) {
+                return null;
+            } else if(this.awardIdx){
+                return this.prizes[this.awardIdx].text;
+            } else{
+                return null
+            }
+           
+        },
     },
 
     data() {
@@ -158,7 +151,7 @@ export default {
             src2: 'center.png',
             prizes: [{
                     text_in: "40",
-                    text: "Скидка 40 руб на экспресс"
+                    text: "Приз 1"
 
                 },
                 {
@@ -168,7 +161,7 @@ export default {
                 },
                 {
                     text_in: "80",
-                    text: "Скидка 80 руб на экспресс"
+                    text: "Приз 2"
 
                 },
                 {
@@ -179,7 +172,7 @@ export default {
                 {
 
                     text_in: "free",
-                    text: "Бесплатный экспресс"
+                    text: "Приз 3"
                 },
                 {
 
@@ -189,7 +182,7 @@ export default {
                 {
 
                     text_in: "200",
-                    text: "Скидка 200Р на чат с FIFA18"
+                    text: "Приз 4"
                 },
                 {
 
@@ -209,7 +202,7 @@ export default {
                 {
 
                     text_in: "50%",
-                    text: "Скидка 50% на все"
+                    text: "Приз 5"
                 },
                 {
 
@@ -217,44 +210,45 @@ export default {
                     text: "Ничего"
                 },
             ],
-            r: 1,
+            r: Number,
             rubles: 100,
             isShowResult: false,
-            chance: Number,
+            chance: 0,
             disabled: 'disabled',
             email_in: '',
             password_in: '',
             email_reg: '',
             password_reg: '',
-            data : {},
+            data: {},
             user: auth.currentUser,
-            id:"",
-            i: 0
-          
+            id: "",
+            prize: '',
+            i: 1,
+            onRegBol: true,
+            show: Boolean,
+            session: Number
 
         };
     },
     mounted() {
+        this.session = Math.floor(Math.random(0) * 100) + 999;
         auth.onAuthStateChanged((user) => {
-            
             const setupUI = (user) => {
-                if(!user) {
-                    this.$refs.modal.style.visibility = "visible";
-                    this.$refs.button.style.visibility = "hidden"
+                if (!user) {
+                    this.onRegBol = false;
                 } else {
                     this.id = user.uid
-                //START  РАБОТАЕТ. НЕ ТРОГАЮ
-               db.collection('users').doc(user.uid).get().then(doc => {
-                 let myData = doc.data()
-                  this.chance = myData.spin
-                   
-                })  
-                //END            
-                    this.$refs.mail_head.textContent = user.email;
-                    this.$refs.button.style.visibility = "visible";
+                    //START  РАБОТАЕТ. НЕ ТРОГАЮ
+                    db.collection('users').doc(user.uid).get().then(doc => {
+                        let myData = doc.data()
+                        this.chance = myData.spin
 
-                }}
-            
+                    })
+                    //END            
+                    this.$refs.mail_head.textContent = user.email;
+
+                }
+            }
 
             if (user) {
                 setupUI(user);
@@ -267,29 +261,18 @@ export default {
 
     },
 
-     
-
     methods: {
-
+        
         getImgUrl(pic) {
             return require('./../assets/' + pic);
         },
-        change() {
-            this.$refs.modal.style.visibility = "hidden";
-            this.$refs.registration.style.visibility = "visible";
-        },
 
-        dbchange() {
-            this.$refs.registration.style.visibility = "hidden";
-            this.$refs.modal.style.visibility = "visible";
-
-        },
         turning() {
-         
+
             if (this.chance <= 0) {
                 this.$refs.button.setAttribute("disabled", this.disabled);
             } else {
-               this.chance--
+                this.chance--;
                 this.isShowResult = false;
                 this.r = Math.random();
                 this.$refs.roulette.style.transform = `rotate(${this.turn}turn)`;
@@ -298,37 +281,44 @@ export default {
                 this.$refs.roulette.classList.add("turning");
                 this.$refs.image_round.classList.add("turning");
                 this.$refs.image_center.classList.add("turning")
+               
 
             }
 
         },
-        turningEnd() {
-            
+        async turningEnd() {
+            if(this.prizes[this.awardIdx]  === this.prizes[8]){
+                this.chance++;
+            }
             this.$refs.roulette.classList.remove("turning");
             this.$refs.image_round.classList.remove("turning")
-            this.isShowResult = true;
+            this.isShowResult = await true;
             //добавляет, issue : добавление в массив
-            let data = this.prizes[this.awardIdx].text
+            this.prize = await this.prizes[this.awardIdx].text;
             
-            var jsonVariable = {};
-            jsonVariable[this.i + 'award'] = data
+
+            let prizes = {};
+            prizes[this.i] = await  this.prize;
+
             
-               //Работает
-             db.collection('users').doc(this.id).set({
-                   spin : this.chance,
-               })
-               
-             db.collection('users').doc(this.id).collection('awards').add(jsonVariable)
-                this.i++
-               
+            await db.collection('users').doc(this.id).collection("awards").doc('award' + this.session + "").set(prizes,{merge : true});
+
+            prizes.length = await 0;
+            this.i++;
+
+
+            //Работает
+            await db.collection('users').doc(this.id).set({
+                spin: this.chance,
+            })
+
+           
 
         },
         onSignUp() {
             let email = this.email_in;
             let password = this.password_in;
             auth.signInWithEmailAndPassword(email, password).then(() => {
-                this.$refs.modal.style.visibility = "hidden",
-                    this.$refs.registration.style.visibility = "hidden"
             }).catch(error => {
                 document.querySelector(".err").innerHTML = error
             });
@@ -342,11 +332,12 @@ export default {
             let email = this.email_reg;
             let password = this.password_reg;
             auth.createUserWithEmailAndPassword(email, password).then(() => {
-              let data = {spin: 1}
-               db.collection('users').doc(this.user.uid).set(data)
+                let data = {
+                    spin: 1
+                }
+                db.collection('users').doc(this.user.uid).set(data)
 
-                this.$refs.registration.style.visibility = "hidden";
-                this.$refs.button.style.visibility = "visible";
+                this.onRegBol = false;
             }).catch(function (error) {
                 var errorCode = error.code;
                 var errorMessage = error.message;
@@ -365,7 +356,6 @@ export default {
 }
 </script>
 
-<!-- Add "scoped" attribute to limit CSS to this component only -->
 
 <style scoped>
 .center {
@@ -377,10 +367,12 @@ body {
 }
 
 .opred {
-    position: absolute;
+    
     display: flex;
     justify-content: row;
     top: 10%;
+    position: relative;
+    margin-top: 10%;
 
 }
 
@@ -388,15 +380,17 @@ body {
     width: 40px;
     height: 40px;
 }
-.awards img{
+
+.awards img {
     position: absolute;
     top: 10%;
     left: 10%;
-        width:50px;
-        height:50px;
-         box-shadow: 0px 0px 20px -5px black;
-    
+    width: 50px;
+    height: 50px;
+    box-shadow: 0px 0px 20px -5px black;
+
 }
+
 @import url("https://fonts.googleapis.com/css?family=Roboto+Condensed:700i");
 
 #app {
@@ -422,24 +416,23 @@ body {
 .wheel__wrapper {
     overflow: hidden;
     display: flex;
-    justify-content: center;
+    justify-content: space-around;
+    flex-direction: column;
     align-items: center;
-    width: 100%;
-    height: 100%;
-    min-width: 900px;
+    width: 100vw;
+    height: 100vh;
+    min-width: auto;     
 }
 
 .wheel__wrapper .wheel__controller {
-
+    position: relative;
+    margin-bottom: 0;
     width: 100%;
     z-index: 3;
-    position: absolute;
-    top: 87%;
-    visibility: hidden;
+    top: auto;
     background-repeat: no-repeat;
     background-position: center bottom;
     background-size: contain;
-    overflow: visible;
     display: flex;
     justify-content: center;
     padding: 0px 0px;
@@ -450,7 +443,7 @@ body {
 
 .wheel__wrapper .wheel__controller .controller__label {
     background-image: url('./../assets/button-spin.png');
-background-size: cover;
+    background-size: cover;
     padding: 20px 60px;
     border-radius: 15px;
     color: #ffffff;
@@ -462,12 +455,8 @@ background-size: cover;
 }
 
 .wheel__wrapper .result__wrapper {
-    position: absolute;
-    width: 90%;
-    top: 70%;
     color: white;
     font-size: 10px;
-    height: 150px;
     font-weight: bold;
     background-color: transparent;
     letter-spacing: -1px;
@@ -599,14 +588,14 @@ background-size: cover;
     width: calc(100% - 100px);
     max-width: 540px;
     border-radius: 50%;
-    position: absolute;
+    position: relative;
     overflow: hidden;
     z-index: 2;
     transition: all 0;
 }
 
 .turning {
-    transition: all 1s cubic-bezier(0.44, 0.02, 0.09, 1);
+    transition: all 4s cubic-bezier(0.44, 0.02, 0.09, 1);
 }
 
 .wheel__wrapper .content__wrapper .sector__wrapper {
@@ -707,43 +696,8 @@ background-size: cover;
     border-radius: 50%;
 }
 
-@media only screen and (min-device-width : 320px) and (max-device-width : 480px) {
-    .wheel__wrapper {
-        display: flex;
-        flex-direction: column;
-        justify-content: space-between;
-        align-items: center;
-        width: 100vw;
-        height: 100vh;
-        min-width: auto;
-    }
 
-    .wheel__wrapper .content__wrapper {
-        position: relative;
-        margin-bottom: 20%;
-    }
 
-    .opred {
-        position: relative;
-        margin-top: 10%;
-
-    }
-
-    .wheel__wrapper .wheel__controller {
-        top: auto;
-        position: relative;
-        margin-bottom: 20%;
-
-    }
-}
-
-@media only screen and (min-device-width : 412px) and (max-device-width : 732px) {
-    .opred {
-        position: relative;
-        margin-top: 15%;
-
-    }
-}
 
 .registration {
     color: white;
@@ -752,7 +706,6 @@ background-size: cover;
     justify-content: center;
     align-items: center;
     position: absolute;
-    visibility: hidden;
     z-index: 9999;
     left: 5%;
     top: 10%;
@@ -762,7 +715,6 @@ background-size: cover;
 }
 
 .modal {
-    visibility: hidden;
     color: white;
     display: flex;
     flex-direction: column;
@@ -819,7 +771,8 @@ background-size: cover;
     background-image: url('./../assets/button.png');
     background-size: cover;
     width: 60%;
-    padding: 14px 0px;
+    background-position: center;
+    padding: 13px 0px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -838,7 +791,8 @@ background-size: cover;
     background-image: url('../assets/button.png');
     background-size: cover;
     width: 60%;
-    padding: 15px 0px;
+    background-position: center;
+    padding: 13px 0px;
     display: flex;
     align-items: center;
     justify-content: center;
